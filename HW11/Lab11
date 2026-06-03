@@ -3,8 +3,7 @@
 #include <vector>
 using namespace std;
 
-const int EMPTY = NULL; // 用 NULL 代表沒有節點
-
+const int EMPTY = NULL; 
 class TreeNode {
 public:
     int value;      // 節點值
@@ -73,9 +72,9 @@ public:
         }
     }
 
-    // 核心實作：計算特定層數總和（符合助教從 0 開始的規範）
+    // 計算特定層數總和
     void printLevelSum(int targetLevel) {
-        // 防禦性檢查 1：若樹為空或輸入小於 0 的不合法層數
+        // 若樹為空或輸入小於 0 的不合法層數
         if (root == nullptr || targetLevel < 0) {
             cout << "The layer exceeds the tree height." << endl;
             return;
@@ -84,7 +83,7 @@ public:
         queue<TreeNode*> q;
         q.push(root);
 
-        int currentLevel = 0; // 配合助教規格：根節點為第 0 層
+        int currentLevel = 0; // 根節點為第 0 層
 
         while (!q.empty()) {
             int levelSize = q.size(); // 當前層的節點數量
@@ -120,17 +119,17 @@ int main() {
     vector<int> arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, NULL, NULL, 10, 11, NULL, NULL };
     tree.buildTree(arr);
 
-    // 1. 輸出 BFS Result (符合範例畫面第一行)
+    // 1. 輸出 BFS Result 
     cout << "BFS Result: ";
     tree.Breadth_first_search(tree.root);
     cout << endl;
 
-    // 2. 提示使用者輸入層數 (符合範例畫面第二行)
+    // 2. 提示使用者輸入層數
     int inputLevel;
     cout << "Please enter the layer to query, starting from 0: ";
     cin >> inputLevel;
 
-    // 3. 計算並輸出結果 (符合範例畫面第三行)
+    //3. 計算並輸出結果 
     tree.printLevelSum(inputLevel);
 
     system("pause");

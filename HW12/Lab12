@@ -1,0 +1,101 @@
+#include <iostream>   
+#include <vector>     
+#include <string>    
+#include <algorithm>  
+#include <fstream>   
+#include <cctype>     
+
+using namespace std;
+
+//定義商品的結構體，用來封裝單一商品的屬性
+struct Product {
+    string name;       // 商品名稱
+    int expiry_days;   // 有效期限
+    int popularity;    // 熱銷程度
+};
+
+// 自定義雙條件比較函式
+
+bool compareProducts(const Product& a, const Product& b) {
+
+    // 如果兩件商品的有效期限不同，即將到期的商品（天數較少）排在前面
+    if (a.expiry_days != b.expiry_days) {
+        return a.expiry_days < b.expiry_days; // 升序排序（從小到大）
+    }
+
+    //如果有效期限相同，則熱銷程度較高（數字較大）的商品排在前面
+    return a.popularity > b.popularity;       // 降序排序（從大到小）
+}
+
+// 處理單一 txt 檔案讀取、排序與輸出的函式
+void processFile(const string& filename) {
+    // 建立檔案輸入流物件，並打開指定的檔案
+    ifstream inFile(filename);
+
+    // 檢查檔案是否成功開啟（如果檔名打錯或沒放對資料夾，會開失敗）
+    if (!inFile) {
+        cout << "\n========================================" << endl;
+        cout << "錯誤：無法開啟檔案 " << filename << "，請確認檔案是否有放對位置！" << endl;
+        cout << "========================================" << endl;
+        return; // 無法開啟則跳出函式，繼續處理下一個檔案
+    }
+
+    cout << "\n========================================" << endl;
+    cout << " 正在處理測試檔案: " << filename << endl;
+    cout << "========================================" << endl;
+
+    int N; // 用來儲存商品數量的變數
+    if (!(inFile >> N)) return; // 讀取第一行的商品數量，若讀取失敗則跳出
+
+    // 建立一個大小為 N 的 Vector 陣列，準備用來放 N 個商品資料
+    vector<Product> products(N);
+
+    // 使用迴圈讀取該檔案中的 N 行商品詳細資料
+    for (int i = 0; i < N; ++i) {
+        string name_part;
+        string full_name = "";
+               
+               while (inFile >> name_part) {
+            // 如果讀到的字串不為空，且第一個字元是數字 (0-9)
+            if (!name_part.empty() && isdigit(name_part[0])) {
+                // 將這個數字字串轉換成整數，存入有效期限
+                products[i].expiry_days = stoi(name_part);
+                // 緊接著讀取下一個數據，也就是熱銷程度
+                inFile >> products[i].popularity;
+                break; // 這一行商品資料讀取完畢，跳出 while 迴圈
+            }
+            else {
+                // 如果不是數字，代表它還是商品名稱的一部分（處理帶有空格的名稱）
+                if (!full_name.empty()) {
+                    full_name += " "; // 如果原本就有字，中間補上空格
+                }
+                full_name += name_part; // 把名稱片段拼接起來
+            }
+        }
+        products[i].name = full_name; // 將拼接好的完整名稱存入結構體
+    }
+
+    inFile.close(); // 資料讀取完畢，關閉該檔案
+
+    // 執行雙條件排序
+         sort(products.begin(), products.end(), compareProducts);
+
+    //在螢幕上印出排序後的正確答案
+    cout << "排序後的商品順序（從顯眼到不顯眼）：" << endl;
+    for (const auto& prod : products) {
+        cout << prod.name << " " << prod.expiry_days << " " << prod.popularity << "\n";
+    }
+}
+
+int main() {
+       vector<string> testFiles = { "input1.txt", "input2.txt", "input3.txt" };
+
+    // 迴圈自動處理三個檔案
+    for (const string& file : testFiles) {
+        processFile(file);
+    }
+
+    // 讓黑視窗不會馬上關閉
+    system("pause");
+    return 0;
+}
